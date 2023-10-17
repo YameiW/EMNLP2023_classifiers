@@ -5,6 +5,8 @@ import fasttext
 from itertools import combinations
 from sklearn.utils import shuffle
 from scipy.spatial import distance
+from collections import Counter
+import math
 
 def nounPair_df(noun_ls, a_dict):
     '''
@@ -92,3 +94,35 @@ def similarity(df,noun_ls):
     df['sim'] = df.apply(similarity,axis=1)
 
     return df
+
+def entropy(labels):
+    '''
+    This function calculates the entropy of a list of labels
+    '''
+    n_labels = len(labels)
+    if n_labels <= 1:
+        return 0
+    counts = np.array(list(Counter(labels).values()))
+    probs = counts / n_labels
+    n_classes = np.count_nonzero(probs)
+    if n_classes <= 1:
+        return 0
+    ent = 0.
+    for i in probs:
+        ent -= i * math.log(i, 2)
+    return ent
+
+def cond_entropy(noun_clf_counter):
+    '''
+    calculate the conditional entropy of nouns given a certain clf   
+    based on the formular on Page 27 from Dye_2017.
+    '''
+    cond_n_exact_clf = {}
+    for key1 in noun_clf_counter.keys():
+        total_count = sum(noun_clf_counter[key1].values())
+        result = 0.0
+        for item in noun_clf_counter[key1]:
+            prob = noun_clf_counter[key1][item]*1.0/total_count
+            result += (-prob*math.log(prob,2))
+        cond_n_exact_clf[key1] = result
+    return cond_n_exact_clf
