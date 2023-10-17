@@ -1,12 +1,12 @@
 import pandas as pd
 import numpy as np
-from collections import defaultdict
+from collections import defaultdict, Counter
 import fasttext
 from itertools import combinations
 from sklearn.utils import shuffle
 from scipy.spatial import distance
-from collections import Counter
 import math
+import pickle
 
 def nounPair_df(noun_ls, a_dict):
     '''
@@ -126,3 +126,29 @@ def cond_entropy(noun_clf_counter):
             result += (-prob*math.log(prob,2))
         cond_n_exact_clf[key1] = result
     return cond_n_exact_clf
+
+
+with open("../data/leipzig_noun.pkl",'rb') as file:
+    nounFreq = pickle.load(file)
+
+num_tokens = sum(nounFreq.values())
+
+def pmi(n1,n2,occurrence, epsilon = 1e-8):
+    '''
+    This function calculates the pmi between noun pairs based on the formula
+    pmi(x,y) = log(p(x,y)/p(x)p(y))
+    num_tokens is the total frequencies of nouns in the dataset
+    '''
+    p_n1_n2 = (occurrence[n1][n2]+epsilon)/num_tokens
+    p_n1 = (nounFreq[n1]+epsilon)/num_tokens
+    p_n2 = (nounFreq[n2]+epsilon)/num_tokens
+    div = p_n1_n2/(p_n1*p_n2)
+
+    return math.log(div)
+
+def pmi_apply(row,occurrence):
+    try:
+        pmi_score = pmi(row['noun1'],row['noun2'],occurrence)
+        return pmi_score
+    except TypeError: # where noun1 is in the occurrence, but with a empty list as key
+        return 0

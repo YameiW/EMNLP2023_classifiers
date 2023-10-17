@@ -2,7 +2,7 @@
 import os
 import pandas as pd
 import pickle
-from collections import defaultdict
+from collections import defaultdict, Counter
 import pyconll
 from joblib import Parallel, delayed
 
@@ -36,6 +36,18 @@ def process_files_in_folder(folder_path, func, *args,n_jobs=-1):
     results = Parallel(n_jobs=n_jobs)(delayed(func)(file_path,*args) for file_path in file_paths)
     return results
 
+def merge_occurrence_counter(occurrence):
+    '''
+    This function turns a list of dictionaries into a dictionary of counters: counters of occurrence of nouns
+    '''
+    merged = defaultdict(list)
+    for d in occurrence:
+        for key, value in d.items():
+            merged[key].extend(value)
+    for key in merged:
+        merged[key] = Counter(merged[key])
+    return merged
+
 pair_df1 = pd.read_csv("./clf_noun_structure.csv")
 pair_df2 = pd.read_csv("./clf_mod_noun_structure.csv")
 
@@ -47,8 +59,11 @@ folder_path = '/home/ywang78/scratch/conllu/leipzig_conllu'
 occurrence_ls1 =  process_files_in_folder(folder_path, occurrence, target_nouns1)
 occurrence_ls2 =  process_files_in_folder(folder_path, occurrence, target_nouns2)
 
+merged1 = merge_occurrence_counter(occurrence_ls1)
+merged2 = merge_occurrence_counter(occurrence_ls2)
+
 with open('../data/clf_noun_pmi.pkl','wb') as file:
-    pickle.dump(occurrence_ls1, file) 
+    pickle.dump(merged1, file) 
 
 with open('../data/clf_mod_noun_pmi.pkl','wb') as file:
-    pickle.dump(occurrence_ls2, file)
+    pickle.dump(merged1, file)
