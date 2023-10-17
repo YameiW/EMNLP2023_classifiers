@@ -2,9 +2,26 @@ import pandas as pd
 import numpy as np
 from collections import defaultdict
 import fasttext
+from itertools import combinations
+from sklearn.utils import shuffle
 from scipy.spatial import distance
 
+def nounPair_df(noun_ls, a_dict):
+    '''
+    This function generates noun pairs based on sampled nouns(noun_ls), and the relative greaterness of n1 and n2 are balanced.
+    a_dict is a dictionary of nouns and their frequencies.
+    '''
+    pair_ls = (list(combinations(noun_ls,2)))
+    pair_df = pd.DataFrame(pair_ls,columns=['noun1','noun2'])
 
+    pair_df['noun1_freq'] = pair_df['noun1'].map(a_dict)
+    pair_df['noun2_freq'] = pair_df['noun2'].map(a_dict)
+
+    pair_df = shuffle(pair_df).reset_index(drop=True)
+
+    pair_df = balancedFreq_n1_n2(pair_df)
+
+    return pair_df
 
 def balancedFreq_n1_n2(df):
     '''
