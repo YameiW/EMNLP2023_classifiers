@@ -1,0 +1,80 @@
+---
+title: "classifier_GAMs"
+output: pdf_document
+date: "2023-10-17"
+---
+
+```{r setup}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Import libraries and data
+
+```{r, echo= FALSE}
+df_clf = read.csv('/Users/yameiwang/Project/mason_project/EMNLP2023_classifiers/data/clf_noun_structure.csv')
+df_mod = read.csv('/Users/yameiwang/Project/mason_project/EMNLP2023_classifiers/data/clf_mod_noun_structure.csv')
+```
+
+```{r}
+library(mgcv)
+library(itsadug)
+library(ggplot2)
+library(hexbin)
+library(dplyr)
+library(emmeans)
+
+df_clf$noun1Log = log(df_clf$noun1_freq)
+df_clf$noun2Log = log(df_clf$noun2_freq)
+df_clf <- subset(df_clf, pmi >=0)
+
+df_mod$noun1Log = log(df_mod$noun1_freq)
+df_mod$noun2Log = log(df_mod$noun2_freq)
+df_mod <- subset(df_clf, pmi >=0)
+
+# combine two datasets into a full dataset
+combined_df <- rbind(df_clf, df_mod)
+dim(combined_df)
+```
+
+## The fulldataset
+
+```{r}
+model1 <- bam(sum_prop ~ te(pmi,sim),data=combined_df,family=gaussian,model='fREML')
+pvisgam(model1, view=c("sim","pmi"),hide.label = TRUE,labcex=0.8,main='SCM: full dataset')
+
+model2 <- bam(sum_prop ~ te(noun1Log,noun2Log),data=combined_df,family=gaussian,model='fREML')
+pvisgam(model2, view=c("noun1Log","noun2Log"),hide.label = TRUE,labcex=0.8,main='SCM: full dataset')
+```
+
+## three way interactions
+
+```{r}
+combined_df$log_freq_sum <- combined_df$noun1Log + combined_df$noun2Log
+df_clf$log_freq_sum <- df_clf$noun1Log + df_clf$noun2Log
+df_mod$log_freq_sum <- df_mod$noun1Log + df_mod$noun2Log
+
+model3 = bam(sum_prop~te(pmi,sim,log_freq_sum),
+                      data=combined_df,family=gaussian, method='fREML')
+plot(model3, main = 'clf_n structure')
+
+
+model4 = bam(sum_prop~te(noun1Log, noun2Log,sim),
+                      data=combined_df,family=gaussian, method='fREML')
+plot(model4, main = 'SCM: full dataset')
+
+model5 = bam(sum_prop~te(noun1Log, noun2Log,sim),
+                      data=df_mod,family=gaussian, method='fREML')
+plot(model5, main = 'clf_mod_n structure')
+
+model6 = bam(sum_prop~te(noun1Log, noun2Log,sim),
+                      data=df_clf,family=gaussian, method='fREML')
+plot(model6, main = 'clf_n structure')
+
+model7 = bam(sum_prop~te(pmi,sim,log_freq_sum),
+                      data=df_clf,family=gaussian, method='fREML')
+plot(model7, main = 'clf_n structure')
+
+model8 = bam(sum_prop~te(pmi,sim,log_freq_sum),
+                      data=df_mod,family=gaussian, method='fREML')
+plot(model8, main = 'clf_mod_n structure')
+```
