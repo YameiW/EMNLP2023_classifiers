@@ -1,0 +1,21 @@
+name: EMNLP2023_classifier
+channels:
+  - conda-forge
+  - defaults
+dependencies:
+  - python=3.8
+  - pip:
+    - stanza
+    - spacy
+    - spacy_stanza
+    - nltk
+    - numpy
+    - scipy
+    - pandas
+    - duckdb
+    - matplotlib
+    - joblib
+    - tqdm
+    - pyconll
+    - fasttext
+    - scikit-learn
