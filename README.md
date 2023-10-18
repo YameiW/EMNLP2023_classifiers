@@ -13,7 +13,7 @@ This study is based on three of the 1M sentence corpora of Mandarin Chinese in t
 
 ## Python files
 There are three python files: 
-* The notebook for data preprocessing to prepare the dataframes for running GAMs,
+* The script for data preprocessing to prepare the dataframes for running GAMs,
 * The notebook for analyzing noun frequencies and MI in two structures,
 * The script for calculating PMI (Pointwise Mutual Information) between pairs of nouns,
 * The module of utils containing Functions used in the analysis,

@@ -66,4 +66,4 @@ with open('../data/clf_noun_pmi.pkl','wb') as file:
     pickle.dump(merged1, file) 
 
 with open('../data/clf_mod_noun_pmi.pkl','wb') as file:
-    pickle.dump(merged1, file)
+    pickle.dump(merged2, file)

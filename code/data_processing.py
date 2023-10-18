@@ -68,5 +68,5 @@ pair_df1 = class_mem_calculator(pair_df1,df,noun_ls1)
 pair_df2 = class_mem_calculator(pair_df2,df,noun_ls2)
 
 # save the data
-pair_df1.to_csv('../data/clf_noun_structure1.csv')
-pair_df2.to_csv('../data/clf_mod_noun_structure1.csv')
+pair_df1.to_csv('../data/clf_noun_structure.csv')
+pair_df2.to_csv('../data/clf_mod_noun_structure.csv')
