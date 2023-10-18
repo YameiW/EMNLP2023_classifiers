@@ -1,3 +1,4 @@
 *.bin
 *.DS_Store
 data_processing.ipynb
+*.pdf
