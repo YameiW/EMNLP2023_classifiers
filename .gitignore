@@ -4,3 +4,4 @@ data_processing.ipynb
 *.pdf
 *.model
 *.txt
+*.npy

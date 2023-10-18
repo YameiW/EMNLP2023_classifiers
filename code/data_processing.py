@@ -54,6 +54,18 @@ pair_df2 = nounPair_df(noun_ls2,a_dict2)
 pair_df1 = similarity(pair_df1,noun_ls1)
 pair_df2 = similarity(pair_df2,noun_ls2)
 
+pair_df1 = similarity_fasttext_custom(pair_df1,noun_ls1)
+pair_df2 = similarity_fasttext_custom(pair_df2,noun_ls2)
+
+pair_df1,ls1 = similarity_word2vec_custom(pair_df1,noun_ls1)
+pair_df2,ls2 = similarity_word2vec_custom(pair_df2,noun_ls2)
+
+with open('../data/word2vec_notfound_clfN.pkl', 'wb') as file:
+    pickle.dump(ls1, file)
+
+with open('../data/word2vec_notfound_clfModN.pkl', 'wb') as file:
+    pickle.dump(ls2, file)
+
 # pmi
 with open('../data/clf_noun_pmi.pkl','rb') as file:
     occurrence1 = pickle.load(file)
