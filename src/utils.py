@@ -2,6 +2,7 @@ import pandas as pd
 import numpy as np
 from collections import defaultdict, Counter
 import fasttext
+from gensim.models import Word2Vec
 from itertools import combinations
 from sklearn.utils import shuffle
 from scipy.spatial import distance
@@ -94,6 +95,44 @@ def similarity(df,noun_ls):
     df['sim'] = df.apply(similarity,axis=1)
 
     return df
+
+def similarity_fasttext_custom(df,noun_ls):
+    '''
+    This function calculates the similarity between noun1 and noun2 based on the customed fasttext model
+    '''
+    ft = fasttext.load_model('/Users/yameiwang/Project/mason_project/EMNLP2023_classifiers/src/fasttext_withoutClf.bin')
+    noun_vec = {} # get vectors for all nouns
+    for noun in noun_ls:
+        noun_vec[noun] = ft.get_word_vector(noun)
+
+    def similarity(row):
+        sim_score = 1.0 - distance.cosine(noun_vec[row['noun1']],noun_vec[row['noun2']])
+        return sim_score
+    
+    df['sim_custom_fasttext'] = df.apply(similarity,axis=1)
+    return df
+
+def similarity_word2vec_custom(df,noun_ls):
+    '''
+    This function calculates the similarity between noun1 and noun2 based on the customed word2vec model.
+    This function also generates the list of nouns that are not in the word2vec model, since some classifiers can be used nouns.
+    '''
+    ls = []
+    model = Word2Vec.load("/Users/yameiwang/Project/mason_project/EMNLP2023_classifiers/src/word2vec_withoutClf.model")
+    noun_vec = {} # get vectors for all nouns
+    for noun in noun_ls:
+        if noun in model.wv:
+            noun_vec[noun] = model.wv[noun]
+        else:
+            ls.append(noun)
+            noun_vec[noun] = np.zeros(100)
+
+    def similarity(row):
+        sim_score = 1.0 - distance.cosine(noun_vec[row['noun1']],noun_vec[row['noun2']])
+        return sim_score
+    
+    df['sim_custom_word2vec'] = df.apply(similarity,axis=1)
+    return df, ls
 
 def entropy(labels):
     '''
