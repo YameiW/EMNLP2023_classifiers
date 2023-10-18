@@ -6,3 +6,5 @@ data_processing.ipynb
 *.txt
 *.npy
 *.log
+.Rdata
+.Rhistory

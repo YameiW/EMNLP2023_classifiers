@@ -12,10 +12,11 @@ This study is based on three of the 1M sentence corpora of Mandarin Chinese in t
 * We excluded nominal phrases with misclassified classifiers based on manual validation.
 
 ## Python files
-There are three python files: 
+There are six python files: 
 * The script for data preprocessing to prepare the dataframes for running GAMs,
 * The notebook for analyzing noun frequencies and MI in two structures,
 * The script for calculating PMI (Pointwise Mutual Information) between pairs of nouns,
+* The script for trainning customized vectors using both fasttext and word2vec models,
 * The module of utils containing Functions used in the analysis,
 * Results of manual validation.
 
