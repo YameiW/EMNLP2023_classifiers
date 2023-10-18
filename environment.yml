@@ -19,3 +19,4 @@ dependencies:
     - pyconll
     - fasttext
     - scikit-learn
+    - gensim 

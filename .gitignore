@@ -2,3 +2,5 @@
 *.DS_Store
 data_processing.ipynb
 *.pdf
+*.model
+*.txt
