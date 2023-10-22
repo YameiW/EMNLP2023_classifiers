@@ -67,13 +67,21 @@ with open('../data/word2vec_notfound_clfModN.pkl', 'wb') as file:
     pickle.dump(ls2, file)
 
 # pmi
-with open('../data/clf_noun_pmi.pkl','rb') as file:
-    occurrence1 = pickle.load(file)
-with open('../data/clf_mod_noun_pmi.pkl','rb') as file:
-    occurrence2 = pickle.load(file)
+file_names = [
+    ('../data/clf_noun_pmi.pkl', '../data/clf_mod_noun_pmi.pkl', 'pmi'),
+    ('../data/clf_noun_pmi_3win.pkl', '../data/clf_mod_noun_pmi_3win.pkl', 'pmi_win3'),
+    ('../data/clf_noun_pmi_5win.pkl', '../data/clf_mod_noun_pmi_5win.pkl', 'pmi_win5'),
+    ('../data/clf_noun_pmi_10win.pkl', '../data/clf_mod_noun_pmi_10win.pkl', 'pmi_win10')
+]
 
-pair_df1['pmi'] = pair_df1.apply(lambda row: pmi_apply(row, occurrence1), axis=1)
-pair_df2['pmi'] = pair_df2.apply(lambda row: pmi_apply(row, occurrence2), axis=1)
+for fname1, fname2, col_name in file_names:
+    with open(fname1, 'rb') as file:
+        occurrence1 = pickle.load(file)
+    with open(fname2, 'rb') as file:
+        occurrence2 = pickle.load(file)
+    
+    pair_df1[col_name] = pair_df1.apply(lambda row: pmi_apply(row, occurrence1), axis=1)
+    pair_df2[col_name] = pair_df2.apply(lambda row: pmi_apply(row, occurrence2), axis=1)
 
 # class membership
 pair_df1 = class_mem_calculator(pair_df1,df,noun_ls1)
