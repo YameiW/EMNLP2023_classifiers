@@ -191,9 +191,3 @@ def pmi_apply(row,occurrence):
         return pmi_score
     except TypeError: # where noun1 is in the occurrence, but with a empty list as key
         return 0
-    
-def process_occurrences(file_path, df1, df2, column_name):
-    with open(file_path, 'rb') as file:
-        occurrence = pickle.load(file)
-    df1[column_name] = df1.apply(lambda row: pmi_apply(row, occurrence), axis=1)
-    df2[column_name] = df2.apply(lambda row: pmi_apply(row, occurrence), axis=1)
