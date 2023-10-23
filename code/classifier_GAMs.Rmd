@@ -32,21 +32,19 @@ library(reticulate)
 df_clf$noun1Log = log(df_clf$noun1_freq)
 df_clf$noun2Log = log(df_clf$noun2_freq)
 df_clf$log_freq_sum <- df_clf$noun1Log + df_clf$noun2Log
-df_clf1 <- subset(df_clf, pmi >=0)
 # checked sim ==1, which are not true 1
-df_clf1 <- subset(df_clf1, sim !=1)
-dim(df_clf1) # 8548     13
+df_clf <- subset(df_clf, sim !=1)
+dim(df_clf) # 18915    19
 
 df_mod$noun1Log = log(df_mod$noun1_freq)
 df_mod$noun2Log = log(df_mod$noun2_freq)
 df_mod$log_freq_sum <- df_mod$noun1Log + df_mod$noun2Log
-df_mod1 <- subset(df_mod, pmi >=0)
-dim(df_mod1) # 5778    13
+dim(df_mod) # 18721    19
 
 # combine two datasets into a full dataset
-combined_df <- rbind(df_clf1, df_mod1)
-combined_df$log_freq_sum <- combined_df$noun1Log + combined_df$noun2Log
-dim(combined_df)
+combined_df <- rbind(df_clf, df_mod)
+combined_df <- subset(combined_df, pmi>=0)
+dim(combined_df) # 14293    19
 ```
 
 # The models in this section is run by the pretrained fasttext model
@@ -75,6 +73,7 @@ pvisgam(model1.3, view=c("sim","pmi_win10"),hide.label = TRUE,labcex=0.8,main='S
 
 par(mfrow=c(1,1))
 
+combined_df2 <- rbind(df_clf,df_mod)
 model2 <- bam(sum_prop ~ te(noun1Log,noun2Log),data=combined_df,family=gaussian,model='fREML')
 pvisgam(model2, view=c("noun1Log","noun2Log"),hide.label = TRUE,labcex=0.8,main='SCM: full dataset')
 ```
@@ -93,19 +92,19 @@ model4 = bam(sum_prop~te(noun1Log, noun2Log,sim),
 plot(model4, main = 'SCM: full dataset')
 
 model5 = bam(sum_prop~te(noun1Log, noun2Log,sim),
-                      data=df_mod1,family=gaussian, method='fREML')
+                      data=df_mod,family=gaussian, method='fREML')
 plot(model5, main = 'SCM: clf_mod_n structure')
 
 model6 = bam(sum_prop~te(noun1Log, noun2Log,sim),
-                      data=df_clf1,family=gaussian, method='fREML')
+                      data=df_clf,family=gaussian, method='fREML')
 plot(model6, main = 'SCM: clf_n structure')
 
 model7 = bam(sum_prop~te(pmi,sim,log_freq_sum),
-                      data=df_clf1,family=gaussian, method='fREML')
+                      data=df_clf,family=gaussian, method='fREML')
 plot(model7, main = 'clf_n structure')
 
 model8 = bam(sum_prop~te(pmi,sim,log_freq_sum),
-                      data=df_mod1,family=gaussian, method='fREML')
+                      data=df_mod,family=gaussian, method='fREML')
 plot(model8, main = 'clf_mod_n structure')
 ```
 
@@ -132,19 +131,19 @@ model4a = bam(sum_prop~te(noun1Log, noun2Log,sim_custom_fasttext),
 plot(model4a, main = 'SCM: full dataset')
 
 model5a = bam(sum_prop~te(noun1Log, noun2Log,sim_custom_fasttext),
-                      data=df_mod1,family=gaussian, method='fREML')
+                      data=df_mod,family=gaussian, method='fREML')
 plot(model5a, main = 'SCM: clf_mod_n structure')
 
 model6a = bam(sum_prop~te(noun1Log, noun2Log,sim_custom_fasttext),
-                      data=df_clf1,family=gaussian, method='fREML')
+                      data=df_clf,family=gaussian, method='fREML')
 plot(model6a, main = 'SCM: clf_n structure')
 
 model7a = bam(sum_prop~te(pmi,sim_custom_fasttext,log_freq_sum),
-                      data=df_clf1,family=gaussian, method='fREML')
+                      data=df_clf,family=gaussian, method='fREML')
 plot(model7a, main = 'clf_n structure')
 
 model8a = bam(sum_prop~te(pmi,sim_custom_fasttext,log_freq_sum),
-                      data=df_mod1,family=gaussian, method='fREML')
+                      data=df_mod,family=gaussian, method='fREML')
 plot(model8a, main = 'clf_mod_n structure')
 ```
 
@@ -152,15 +151,15 @@ plot(model8a, main = 'clf_mod_n structure')
 
 ## change the dataframe, and remove unknown nouns
 ```{r, warning=FALSE}
-df_clf2 <- subset(df_clf1, !(noun1 == '堆' | noun2 == '堆'))
-df_mod2 <- subset(df_mod1, !(noun1 == '品' | noun2 == '品'))
-combined_df2 <- rbind(df_clf2, df_mod2)
+df_clf1 <- subset(df_clf, !(noun1 == '堆' | noun2 == '堆'))
+df_mod1 <- subset(df_mod, !(noun1 == '品' | noun2 == '品'))
+combined_df1 <- rbind(df_clf1, df_mod1)
 ```
 
 ## two-way interactions
 
 ```{r,warning=FALSE,fig.width = 6, fig.height= 6}
-model1b <- bam(sum_prop ~ te(pmi,sim_custom_word2vec),data=combined_df2,family=gaussian,model='fREML')
+model1b <- bam(sum_prop ~ te(pmi,sim_custom_word2vec),data=combined_df1,family=gaussian,model='fREML')
 pvisgam(model1b, view=c("sim_custom_word2vec","pmi"),hide.label = TRUE,labcex=0.8,main='SCM: full dataset')
 ```
 
@@ -169,28 +168,28 @@ pvisgam(model1b, view=c("sim_custom_word2vec","pmi"),hide.label = TRUE,labcex=0.
 ```{r,warning=FALSE,fig.width = 6, fig.height= 6}
 
 model3b = bam(sum_prop~te(pmi,sim_custom_word2vec,log_freq_sum),
-                      data=combined_df2,family=gaussian, method='fREML')
+                      data=combined_df1,family=gaussian, method='fREML')
 plot(model3b, main = 'SCM: full dataset')
 
 
 model4b = bam(sum_prop~te(noun1Log, noun2Log,sim_custom_word2vec),
-                      data=combined_df2,family=gaussian, method='fREML')
+                      data=combined_df1,family=gaussian, method='fREML')
 plot(model4b, main = 'SCM: full dataset')
 
 model5b = bam(sum_prop~te(noun1Log, noun2Log,sim_custom_word2vec),
-                      data=df_mod2,family=gaussian, method='fREML')
+                      data=df_mod1,family=gaussian, method='fREML')
 plot(model5b, main = 'SCM: clf_mod_n structure')
 
 model6b = bam(sum_prop~te(noun1Log, noun2Log,sim_custom_word2vec),
-                      data=df_clf2,family=gaussian, method='fREML')
+                      data=df_clf1,family=gaussian, method='fREML')
 plot(model6b, main = 'SCM: clf_n structure')
 
 model7b = bam(sum_prop~te(pmi,sim_custom_word2vec,log_freq_sum),
-                      data=df_clf2,family=gaussian, method='fREML')
+                      data=df_clf1,family=gaussian, method='fREML')
 plot(model7b, main = 'clf_n structure')
 
 model8b = bam(sum_prop~te(pmi,sim_custom_word2vec,log_freq_sum),
-                      data=df_mod2,family=gaussian, method='fREML')
+                      data=df_mod1,family=gaussian, method='fREML')
 plot(model8b, main = 'clf_mod_n structure')
 ```
 
