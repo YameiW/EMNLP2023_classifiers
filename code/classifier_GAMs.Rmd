@@ -115,6 +115,8 @@ plot(model8, main = 'clf_mod_n structure')
 ```{r,warning=FALSE,fig.width = 6, fig.height= 6}
 model1a <- bam(sum_prop ~ te(pmi,sim_custom_fasttext),data=combined_df,family=gaussian,model='fREML')
 pvisgam(model1a, view=c("sim_custom_fasttext","pmi"),hide.label = TRUE,labcex=0.8,main='SCM: full dataset')
+
+anova(model1, model1a)
 ```
 
 ## three-way interactions
