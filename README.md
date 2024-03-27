@@ -11,6 +11,9 @@ This study is based on three of the 1M sentence corpora of Mandarin Chinese in t
 * We removed nominal phrases with unusual lengths (> 35 characters);
 * We excluded nominal phrases with misclassified classifiers based on manual validation.
 
+<img width="1049" alt="Screenshot 2024-03-27 at 12 15 44 PM" src="https://github.com/YameiW/EMNLP2023_classifiers/assets/49138382/0cddcfe9-fa85-421c-af5d-ec1c09eda8b0">
+
+
 ## Python files
 There are six python files: 
 * The script for data preprocessing to prepare the dataframes for running GAMs,
